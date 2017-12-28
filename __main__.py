@@ -57,11 +57,11 @@ def precio(bot, update):
 def red(bot, update):
 	info = rpc.getmininginfo()
 
-	difficulty = float(info['difficulty'])
+	difficulty = float(info['difficulty']['proof-of-work'])
 	blocks = info['blocks']
-	power = info['networkhashps'] / 1000000.0
+	power = info['netmhashps']
 
-	delta = difficulty * 2**32 / float(info['networkhashps']) / 60 / 60.0
+	delta = difficulty * 2**32 / float(info['netmhashps']) * 1000000.0 / 60 / 60.0
 
 	if delta < 1:
 		delta = str(round(delta*60, 3)) + " minutos"
