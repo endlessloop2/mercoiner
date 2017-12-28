@@ -39,7 +39,7 @@ def start(bot, update):
 def precio(bot, update):
 
 	web = urlopen('https://www.southxchange.com/api/price/mrn/btc')
-	webu = urlopen('https://www.southxchange.com/api/price/btc/usd')
+	webu = urlopen('https://www.southxchange.com/api/price/mrn/usd')
 	reader = codecs.getreader("utf-8")
 	api = load(reader(web))
 	apiu = load(reader(webu))	
@@ -51,8 +51,8 @@ def precio(bot, update):
 	var = api['Variation24Hr']
 	
 	msg = 'SOUTHXCHANGE:\nPrecio de compra: %s\nPrecio de venta: %s' % (ask, bid)
-	msg =+ '\nPrecio de compra: %s\nPrecio de venta: %s' % (asku, bidu)
-	msg =+ '\nVariación 24hr: %s' % (var)
+	msg += '\nPrecio de compra: %s\nPrecio de venta: %s' % (asku, bidu)
+	msg += '\nVariación 24hr: %s//%%' % (var)
 
 
 	logger.info("precio() => %s" % msg.replace('\n',' // '))
