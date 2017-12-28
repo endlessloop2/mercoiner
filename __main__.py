@@ -2,7 +2,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from bitcoinrpc.authproxy import AuthServiceProxy
 #from random import seed, randint
 #from os import urandom
-#import hashlib, logging
+import hashlib, logging
 from config import *
 from urllib.request import urlopen
 from json import load
