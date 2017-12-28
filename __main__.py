@@ -95,8 +95,8 @@ def main():
 
 
 	# Inicio de bot
-	botAddress = getaddress("quirquincho")
-	logger.info("Mercoiner V 0.9 - %s" % botAddress)
+	#botAddress = getaddress("quirquincho")
+	logger.info("Mercoiner V 0.9")
 	updater.start_polling()
 
 	updater.idle()
