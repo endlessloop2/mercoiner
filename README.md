@@ -1,5 +1,5 @@
-# [@QuirquinchoBot](https://telegram.me/quirquinchobot)
-Bot de Telegram para enviar y recibir Chauchas.
+# [@MercoinerBot](https://telegram.me/mercoinerbot)
+Bot de Telegram para ver información acerca de Mercoin.
 
 ## Utilización:
 
@@ -11,7 +11,7 @@ Bot de Telegram para enviar y recibir Chauchas.
  
 ## Requisitos:
 
-* Wallet del [Proyecto Chaucha](https://www.chaucha.cl) en modo *daemon RPC*
+* Wallet de [Mercoin](https://www.mercoin.org) en modo *daemon RPC*
 * [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
 * [python-bitcoinrpc](https://github.com/jgarzik/python-bitcoinrpc)
 * Python ver. 3.6
