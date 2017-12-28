@@ -105,23 +105,16 @@ def address(bot, update):
 # Lectura de precio de mercado
 def precio(bot, update):
 
-	web = urlopen('https://www.southxchange.com/api/price/cha/btc')
+	web = urlopen('https://www.southxchange.com/api/price/mrn/btc')
 	reader = codecs.getreader("utf-8")
 	api = load(reader(web))
 
 	bid = '{0:.8f} BTC'.format(api['Bid'])
 	ask = '{0:.8f} BTC'.format(api['Ask'])
 	var = api['Variation24Hr']
-
-	orion = urlopen('https://api.orionx.io/graphql?query={marketOrderBook(marketCode:"CHACLP",limit:1){buy{limitPrice}sell{limitPrice}}}')
-	api = load(reader(orion))
-
-	buy = api['data']['marketOrderBook']['buy'][0]['limitPrice']
-	sell = api['data']['marketOrderBook']['sell'][0]['limitPrice']
-
+	
 	msg = 'SOUTHXCHANGE:\nPrecio de compra: %s\nPrecio de venta: %s' % (ask, bid)
-	msg += '\n\n'
-	msg += 'ORIONX:\nPrecio de compra: $%s CLP\nPrecio de venta: $%s CLP' % (sell, buy)
+
 
 	logger.info("precio() => %s" % msg.replace('\n',' // '))
 	update.message.reply_text("%s" % msg)	
