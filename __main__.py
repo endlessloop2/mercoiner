@@ -42,7 +42,7 @@ def precio(bot, update):
 	webu = urlopen('https://www.southxchange.com/api/price/btc/usd')
 	reader = codecs.getreader("utf-8")
 	api = load(reader(web))
-        apiu = load(reader(webu))	
+	apiu = load(reader(webu))	
 	
 	bid = '{0:.8f} BTC'.format(api['Bid'])
 	ask = '{0:.8f} BTC'.format(api['Ask'])
