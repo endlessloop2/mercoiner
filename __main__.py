@@ -1,8 +1,8 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from bitcoinrpc.authproxy import AuthServiceProxy
-from random import seed, randint
-from os import urandom
-import hashlib, logging
+#from random import seed, randint
+#from os import urandom
+#import hashlib, logging
 from config import *
 from urllib.request import urlopen
 from json import load
@@ -15,91 +15,24 @@ logger = logging.getLogger(__name__)
 rpc = AuthServiceProxy("http://%s:%s@127.0.0.1:%i"%(RPCuser, RPCpassword, RPCport))
 
 # Hashing de (string + salt) en algoritmo sha256
-def hash(string):
-	sha = hashlib.sha256()
-	template = (str(string) + salt).encode('utf-8')
-	sha.update(template)
+#def hash(string):
+#	sha = hashlib.sha256()
+#	template = (str(string) + salt).encode('utf-8')
+#	sha.update(template)
 
-	return sha.hexdigest()
-
-
-# Lectura de address, o generación si no existe
-def getaddress(name):
-	addressList = rpc.getaddressesbyaccount(name)
-
-	if len(addressList) == 0:
-		address = rpc.getnewaddress(name)
-	else:
-		address = addressList[0]
-
-	return address
+#	return sha.hexdigest()
 
 
 def start(bot, update):
 	user = update.message.from_user
 
-	msg = "Holi, soy Quirquincho :D"
-	msg += "\nPuedes interactuar conmigo con estos cuatro simples comandos:"
-	msg += "\n\n/address te permite crear una dirección especifica para tu usuario de Telegram, la cual sirve para enviar o recibir Chauchas."
-	msg += "\n\n/balance enseña la cantidad de Chauchas que tienes dentro de esa dirección"
-	msg += "\n\nel comando /send puedes enviar Chauchas hacia otras direcciones."
-	msg += " Por ejemplo, si deseas enviarle 100 chauchas a la dirección cfBifAmAK3h9Ke4wE2auXaEbfPqeMV44GQ debes usar el comando de la siguiente manera:"
-	msg += "\n\n/send 100 cfBifAmAK3h9Ke4wE2auXaEbfPqeMV44GQ"
+	msg =  "Hola, soy Mercoiner Bot"
+	msg += "\nPuedes interactuar conmigo con estos comandos:"
+	msg += "\n\n/precio te permite ver el precio de la Mercoin"
 	msg += "\n\ny para finalizar esta el comando /red, que resume el estado actual de la red."
 
 	logger.info("start(%i)" % user.id)
-	update.message.reply_text("%s" % msg)	
-
-# Enviar CHA
-def send(bot, update, args):
-	user = update.message.from_user
-	userHash = hash(user.id)
-	balance = float(rpc.getbalance(userHash))
-
-	try:
-		amount = float(args[0])
-		receptor = args[1]
-
-		if not len(receptor) == 34 and receptor[0] == 'c':
-			sending = "Address inválida"
-
-		elif not balance > amount:
-			sending = "Balance insuficiente"
-
-		elif not amount > 0:
-				sending	= "Monto inválido"
-
-		else:
-			sending = rpc.sendfrom(userHash, receptor, float(amount))
-			sending = "txid: " + sending
-
-	except:
-		amount = 0.0
-		receptor = "invalid"
-		sending = "syntax error\nUSO: /send monto address"
-
-	logger.info("send(%i, %f, %s) => %s" % (user.id, amount, receptor, sending.replace('\n',' // ')))
-	update.message.reply_text("%s" % sending)		
-
-
-# Mostrar saldo y address de Quirquincho
-def info(bot, update):
-	address = getaddress("quirquincho")
-	balance = float(rpc.getbalance("quirquincho"))
-
-	logger.info("info() => (%s, %f)" % (address, balance))
-	update.message.reply_text("Balance de Quirquincho: %f CHA" % balance)		
-
-
-# Generar solo 1 address por usuario (user.id)
-def address(bot, update):
-	user = update.message.from_user
-	userHash = hash(user.id)
-
-	address = getaddress(userHash)
-
-	logger.info("address(%i) => %s" % (user.id, address))
-	update.message.reply_text("%s" % address)
+	update.message.reply_text("%s" % msg)		
 
 
 # Lectura de precio de mercado
@@ -118,17 +51,6 @@ def precio(bot, update):
 
 	logger.info("precio() => %s" % msg.replace('\n',' // '))
 	update.message.reply_text("%s" % msg)	
-
-
-# Mostrar balance de usuario
-def balance(bot, update):
-	user = update.message.from_user
-	userHash = hash(user.id)
-
-	balance = float(rpc.getbalance(userHash))
-
-	logger.info("balance(%i) => %f" % (user.id, balance))
-	update.message.reply_text("{0:.8f} CHA".format(balance))
 
 
 # Información de la red
@@ -163,12 +85,8 @@ def main():
 	dp = updater.dispatcher
 
 	# Listado de comandos
-	dp.add_handler(CommandHandler("send", send, pass_args=True))
-	dp.add_handler(CommandHandler("address", address))
-	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("help", start))
-	dp.add_handler(CommandHandler("info", info))
 	dp.add_handler(CommandHandler("precio", precio))
 	dp.add_handler(CommandHandler("red", red))
 
@@ -178,7 +96,7 @@ def main():
 
 	# Inicio de bot
 	botAddress = getaddress("quirquincho")
-	logger.info("Quirquincho V 1.0 - %s" % botAddress)
+	logger.info("Mercoiner V 0.9 - %s" % botAddress)
 	updater.start_polling()
 
 	updater.idle()
