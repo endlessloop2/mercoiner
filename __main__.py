@@ -46,13 +46,13 @@ def precio(bot, update):
 	
 	bid = '{0:.8f} BTC'.format(api['Bid'])
 	ask = '{0:.8f} BTC'.format(api['Ask'])
-	bidu = '%s USD' % round(apiu['Bid'], 0)
-	asku = '%s USD' % round(apiu['Ask'], 0)
+	bidu = '%s USD' % round(apiu['Bid'], 4)
+	asku = '%s USD' % round(apiu['Ask'], 4)
 	var = api['Variation24Hr']
 	
 	msg = 'SOUTHXCHANGE:\nPrecio de compra: %s\nPrecio de venta: %s' % (ask, bid)
 	msg += '\nPrecio de compra: %s\nPrecio de venta: %s' % (asku, bidu)
-	msg += '\nVariación 24hr: %s//%%' % (var)
+	msg += '\nVariación 24hr: %s%%' % (var)
 
 
 	logger.info("precio() => %s" % msg.replace('\n',' // '))
