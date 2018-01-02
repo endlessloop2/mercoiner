@@ -67,17 +67,17 @@ def red(bot, update):
 	blocks = info['blocks']
 	power = info['netmhashps']
 
-	delta = difficulty * 2**32 / float(info['netmhashps']) * 1000000.0 / 60 / 60.0
+	#delta = difficulty * 2**32 / float(info['netmhashps']) * 1000000.0 / 60 / 60.0
 
-	if delta < 1:
-		delta = str(round(delta*60, 3)) + " minutos"
-	else:
-		delta = str(round(delta, 3)) + " horas"
+	#if delta < 1:
+	#	delta = str(round(delta*60, 3)) + " minutos"
+	#else:
+	#	delta = str(round(delta, 3)) + " horas"
 
-	msg = "Bloques: %i\nDificultad: %f\nHashing Power: %f Mh/s\n\nEl siguiente bloque se creará en %s"
+	msg = "Bloques: %i\nDificultad: %f\nHashing Power: %f Mh/s\n"
 
-	logger.info("red() => (%i, %f, %f, %s)" % (blocks, difficulty, power, delta))
-	update.message.reply_text(msg % (blocks, difficulty, power, delta))
+	logger.info("red() => (%i, %f, %f)" % (blocks, difficulty, power))
+	update.message.reply_text(msg % (blocks, difficulty, power))
 
 def error(bot, update, error):
 	logger.warning('Update: "%s" - Error: "%s"', update, error)
