@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from bitcoinrpc.authproxy import AuthServiceProxy
-#from random import seed, randint
-#from os import urandom
+from random import seed, randint
+from os import urandom
 import hashlib, logging
 from config import *
 from urllib.request import urlopen
@@ -15,12 +15,24 @@ logger = logging.getLogger(__name__)
 rpc = AuthServiceProxy("http://%s:%s@127.0.0.1:%i"%(RPCuser, RPCpassword, RPCport))
 
 # Hashing de (string + salt) en algoritmo sha256
-#def hash(string):
-#	sha = hashlib.sha256()
-#	template = (str(string) + salt).encode('utf-8')
-#	sha.update(template)
+def hash(string):
+	sha = hashlib.sha256()
+	template = (str(string) + salt).encode('utf-8')
+	sha.update(template)
 
-#	return sha.hexdigest()
+	return sha.hexdigest()
+
+
+# Lectura de address, o generación si no existe
+def getaddress(name):
+	addressList = rpc.getaddressesbyaccount(name)
+
+	if len(addressList) == 0:
+		address = rpc.getnewaddress(name)
+	else:
+		address = addressList[0]
+
+	return address
 
 
 def start(bot, update):
@@ -32,8 +44,69 @@ def start(bot, update):
 	msg += "\n\ny para finalizar esta el comando /red, que resume el estado actual de la red."
 
 	logger.info("start(%i)" % user.id)
-	update.message.reply_text("%s" % msg)		
+	update.message.reply_text("%s" % msg)
+	
 
+# Enviar CHA
+def send(bot, update, args):
+	user = update.message.from_user
+	userHash = hash(user.id)
+	balance = float(rpc.getbalance(userHash))
+
+	try:
+		amount = float(args[0])
+		receptor = args[1]
+
+		if not len(receptor) == 34 and receptor[0] == 'M':
+			sending = "Address inválida"
+
+		elif not balance > amount:
+			sending = "Balance insuficiente"
+
+		elif not amount > 0:
+				sending	= "Monto inválido"
+
+		else:
+			sending = rpc.sendfrom(userHash, receptor, float(amount))
+			sending = "txid: " + sending
+
+	except:
+		amount = 0.0
+		receptor = "invalid"
+		sending = "syntax error\nUSO: /send monto address"
+
+	logger.info("send(%i, %f, %s) => %s" % (user.id, amount, receptor, sending.replace('\n',' // ')))
+	update.message.reply_text("%s" % sending)		
+
+
+# TODO
+def info(bot, update):
+	address = getaddress("mercoinerbot")
+	balance = float(rpc.getbalance("mercoinerbot"))
+
+	logger.info("info() => (%s, %f)" % (address, balance))
+	update.message.reply_text("Balance de Mercoiner: %f CHA" % balance)		
+
+
+# Generar solo 1 address por usuario (user.id)
+def address(bot, update):
+	user = update.message.from_user
+	userHash = hash(user.id)
+
+	address = getaddress(userHash)
+
+	logger.info("address(%i) => %s" % (user.id, address))
+	update.message.reply_text("%s" % address)
+
+# Mostrar balance de usuario
+def balance(bot, update):
+	user = update.message.from_user
+	userHash = hash(user.id)
+
+	balance = float(rpc.getbalance(userHash))
+
+	logger.info("balance(%i) => %f" % (user.id, balance))
+	update.message.reply_text("{0:.8f} CHA".format(balance))	
 
 # Lectura de precio de mercado
 def precio(bot, update):
@@ -79,6 +152,66 @@ def red(bot, update):
 	logger.info("red() => (%i, %f, %f)" % (blocks, difficulty, power))
 	update.message.reply_text(msg % (blocks, difficulty, power))
 
+	
+# Dado
+def dice(bot, update, args):
+	user = update.message.from_user
+	userHash = hash(user.id)
+	userAddress = getaddress(userHash)
+	userBalance = float(rpc.getbalance(userHash))
+	rand = -1
+
+	try:
+		bet = float(args[0])
+
+		if not bet > 0:
+			result = "apuesta inválida"
+
+		elif not bet < userBalance:
+			result = "balance insuficiente"
+
+		else:
+			botAddress = getaddress("quirquincho")
+			botBalance = float(rpc.getbalance("quirquincho"))
+
+			prize = bet * 2
+			maxNumber = 1000
+			lucky = 51.5 # posibilidades de ganar 48,5% 
+
+			if not botBalance > prize:
+				result = "No tengo tantas mercoins :c"
+			else:
+				# Seed y generación de valor aleatorio
+				seed(repr(urandom(64)))
+				rand = randint(0,maxNumber)
+
+				# Bonus
+				if rand == 777:
+					result = "BONUS x2 !! Ganaste %f MRN\nNúmero: %i" % (prize, lucky)
+					rpc.sendfrom("mercoiner", userAddress, prize)
+
+				# Ganar
+				elif rand > lucky:
+					result = "Ganaste %f CHA !\nNúmero: %i" % (bet, rand)
+					rpc.sendfrom("mercoiner", userAddress, bet)
+
+				# ???
+				elif rand == int(bet):
+					result = "Vale otro..."
+
+				# Perder
+				else:
+					result = "Perdiste %f MRN\nNúmero: %i" % (bet, rand)
+					rpc.sendfrom(userHash, botAddress, bet)
+	except:
+		bet = 0.0
+		rand = 0
+		result = "syntax error\nUSO: /dice apuesta"
+	
+	logger.info("dice(%i, %f, %i) => %s" % (user.id, bet, rand, result.replace('\n',' // ')))
+	update.message.reply_text("%s" % result)		
+
+	
 def error(bot, update, error):
 	logger.warning('Update: "%s" - Error: "%s"', update, error)
 
@@ -91,11 +224,15 @@ def main():
 	dp = updater.dispatcher
 
 	# Listado de comandos
+	dp.add_handler(CommandHandler("send", send, pass_args=True))
+	dp.add_handler(CommandHandler("dice", dice, pass_args=True))
+	dp.add_handler(CommandHandler("address", address))
+	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("help", start))
-	dp.add_handler(CommandHandler("precio", precio))
+	dp.add_handler(CommandHandler("info", info))
 	dp.add_handler(CommandHandler("red", red))
-
+	
 	# log all errors
 	dp.add_error_handler(error)
 
