@@ -192,7 +192,7 @@ def dice(bot, update, args):
 
 				# Ganar
 				elif rand > lucky:
-					result = "Ganaste %f CHA !\nNúmero: %i" % (bet, rand)
+					result = "Ganaste %f MRN !\nNúmero: %i" % (bet, rand)
 					rpc.sendfrom("mercoiner", userAddress, bet)
 
 				# ???
@@ -210,6 +210,8 @@ def dice(bot, update, args):
 	
 	logger.info("dice(%i, %f, %i) => %s" % (user.id, bet, rand, result.replace('\n',' // ')))
 	update.message.reply_text("%s" % result)		
+
+				
 
 	
 def error(bot, update, error):
