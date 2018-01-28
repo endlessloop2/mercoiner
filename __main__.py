@@ -111,9 +111,9 @@ def balance(bot, update):
 	address = getaddress(userHash)
 	balance = float(rpc.getbalance(userHash))
 
-	logger.info("balance(%i) => %f" % (user.id, balance, address))
-	update.message.reply_text("Tu balance es de {0:.8f} MRN".format(balance))	
-
+	logger.info("balance(%i) => %f %s" % (user.id, balance, address))
+	update.message.reply_text("{}, tu balance es de {0:.8f} MRN".format(user.username,balance))	
+ 
 # Lectura de precio de mercado
 def precio(bot, update):
 
