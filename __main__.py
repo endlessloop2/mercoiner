@@ -81,11 +81,11 @@ def send(bot, update, args):
 
 # TODO
 def info(bot, update):
-	address = getaddress("mercoinerbot")
-	balance = float(rpc.getbalance("mercoinerbot"))
+	address = getaccountaddress("mercoiner")
+	balance = float(rpc.getbalance("mercoiner"))
 
 	logger.info("info() => (%s, %f)" % (address, balance))
-	update.message.reply_text("Balance de Mercoiner: %f CHA" % balance)		
+	update.message.reply_text("Balance de Mercoiner: %f MRN" % balance)		
 
 
 # Generar solo 1 address por usuario (user.id)
@@ -93,7 +93,7 @@ def address(bot, update):
 	user = update.message.from_user
 	userHash = hash(user.id)
 
-	address = getaddress(userHash)
+	address = getaccountaddress(userHash)
 
 	logger.info("address(%i) => %s" % (user.id, address))
 	update.message.reply_text("%s" % address)
@@ -106,7 +106,7 @@ def balance(bot, update):
 	balance = float(rpc.getbalance(userHash))
 
 	logger.info("balance(%i) => %f" % (user.id, balance))
-	update.message.reply_text("{0:.8f} CHA".format(balance))	
+	update.message.reply_text("{0:.8f} MRN".format(balance))	
 
 # Lectura de precio de mercado
 def precio(bot, update):
@@ -123,8 +123,8 @@ def precio(bot, update):
 	asku = '%s USD' % round(apiu['Ask'], 4)
 	var = api['Variation24Hr']
 	
-	msg = 'SOUTHXCHANGE:\nPrecio de compra: %s\nPrecio de venta: %s' % (ask, bid)
-	msg += '\nPrecio de compra: %s\nPrecio de venta: %s' % (asku, bidu)
+	msg = 'SOUTHXCHANGE:\nPrecio de compra: %s\nPrecio de venta: %s' % (bid, ask)
+	msg += '\nPrecio de compra: %s\nPrecio de venta: %s' % (bidu, asku)
 	msg += '\nVariación 24hr: %s%%' % (var)
 
 
@@ -226,13 +226,11 @@ def main():
 	dp = updater.dispatcher
 
 	# Listado de comandos
-	dp.add_handler(CommandHandler("send", send, pass_args=True))
-	dp.add_handler(CommandHandler("dice", dice, pass_args=True))
 	dp.add_handler(CommandHandler("address", address))
 	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("start", start))
 	dp.add_handler(CommandHandler("help", start))
-	dp.add_handler(CommandHandler("info", info))
+	dp.add_handler(CommandHandler("precio", precio))
 	dp.add_handler(CommandHandler("red", red))
 	
 	# log all errors
@@ -240,7 +238,7 @@ def main():
 
 
 	# Inicio de bot
-	#botAddress = getaddress("quirquincho")
+	botAddress = getaccountaddress("mercoiner")
 	logger.info("Mercoiner V 0.9")
 	updater.start_polling()
 
