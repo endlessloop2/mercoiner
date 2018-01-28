@@ -175,8 +175,8 @@ def dice(bot, update, args):
 			botBalance = float(rpc.getbalance("mercoiner"))
 
 			prize = bet * 2
-			maxNumber = 100
-			lucky = 51.5 # posibilidades de ganar 48,5% 
+			maxNumber = 1000
+			lucky = 515 # posibilidades de ganar 48,5% 
 
 			if not botBalance > prize:
 				result = "No tengo tantas mercoins :c"
