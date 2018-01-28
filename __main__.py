@@ -41,6 +41,12 @@ def start(bot, update):
 	msg =  "Hola, soy Mercoiner Bot"
 	msg += "\nPuedes interactuar conmigo con estos comandos:"
 	msg += "\n\n/precio te permite ver el precio de la Mercoin"
+	msg += "\n\n/address te permite crear una dirección asociada a tu usuario de Telegram, la cual sirve para enviar o recibir Mercoins."
+	msg += "\n\n/balance muestra la cantidad de Mercoins que tienes dentro de esa dirección"
+	msg += "\n\nel comando /send puedes enviar Mercoins hacia otras direcciones."
+	msg += " Por ejemplo, si deseas enviarle 100 mercoins a la dirección MGrVDKunT76XGRfdv1KbJH78DYZXetwvVU debes usar el comando de la siguiente manera:"
+	msg += "\n\n/send 100 MGrVDKunT76XGRfdv1KbJH78DYZXetwvVU"
+	msg += "\n\nAdemás, puedes apostar las mercoins que tienes depositadas con /dice especificando la cantidad que quieres apostar. Ej: /dice 100"
 	msg += "\n\ny para finalizar esta el comando /red, que resume el estado actual de la red."
 
 	logger.info("start(%i)" % user.id)
@@ -102,11 +108,11 @@ def address(bot, update):
 def balance(bot, update):
 	user = update.message.from_user
 	userHash = hash(user.id)
-
+	address = getaddress(userHash)
 	balance = float(rpc.getbalance(userHash))
 
-	logger.info("balance(%i) => %f" % (user.id, balance))
-	update.message.reply_text("{0:.8f} MRN".format(balance))	
+	logger.info("balance(%i) => %f" % (user.id, balance, address))
+	update.message.reply_text("user.username"."Tu balance es de {0:.8f} MRN".format(balance))	
 
 # Lectura de precio de mercado
 def precio(bot, update):
