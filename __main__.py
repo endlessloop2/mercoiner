@@ -81,7 +81,7 @@ def send(bot, update, args):
 
 # TODO
 def info(bot, update):
-	address = getaccountaddress("mercoiner")
+	address = getaddress("mercoiner")
 	balance = float(rpc.getbalance("mercoiner"))
 
 	logger.info("info() => (%s, %f)" % (address, balance))
@@ -93,7 +93,7 @@ def address(bot, update):
 	user = update.message.from_user
 	userHash = hash(user.id)
 
-	address = getaccountaddress(userHash)
+	address = getaddress(userHash)
 
 	logger.info("address(%i) => %s" % (user.id, address))
 	update.message.reply_text("%s" % address)
@@ -238,7 +238,7 @@ def main():
 
 
 	# Inicio de bot
-	botAddress = getaccountaddress("mercoiner")
+	botAddress = getaddress("mercoiner")
 	logger.info("Mercoiner V 0.9")
 	updater.start_polling()
 
