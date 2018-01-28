@@ -171,11 +171,11 @@ def dice(bot, update, args):
 			result = "balance insuficiente"
 
 		else:
-			botAddress = getaddress("quirquincho")
-			botBalance = float(rpc.getbalance("quirquincho"))
+			botAddress = getaddress("mercoiner")
+			botBalance = float(rpc.getbalance("mercoiner"))
 
 			prize = bet * 2
-			maxNumber = 1000
+			maxNumber = 100
 			lucky = 51.5 # posibilidades de ganar 48,5% 
 
 			if not botBalance > prize:
@@ -206,7 +206,7 @@ def dice(bot, update, args):
 	except:
 		bet = 0.0
 		rand = 0
-		result = "syntax error\nUSO: /dice apuesta"
+		result = "Syntax error\nUSO: /dice apuesta"
 	
 	logger.info("dice(%i, %f, %i) => %s" % (user.id, bet, rand, result.replace('\n',' // ')))
 	update.message.reply_text("%s" % result)		
@@ -227,6 +227,7 @@ def main():
 
 	# Listado de comandos
 	dp.add_handler(CommandHandler("send", send, pass_args=True))
+	dp.add_handler(CommandHandler("dice", dice, pass_args=True))
 	dp.add_handler(CommandHandler("address", address))
 	dp.add_handler(CommandHandler("balance", balance))
 	dp.add_handler(CommandHandler("start", start))
